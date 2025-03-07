@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_imporrt_export_product_form" model="ir.ui.view">
+        <field name="name">imporrt.export.product.form</field>
+        <field name="name">imporrt.export.product.form</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="product_type" />
+                        <field name="price" />
+                        <field name="quantity" />
+                        <field name="description" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_imporrt_export_product_tree" model="ir.ui.view">
+        <field name="name">imporrt.export.product.list</field>
+        <field name="model">imporrt.export.product</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" />
+                <field name="product_type" />
+                <field name="price" />
+                <field name="quantity" />
+            </list>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--  List view  -->
+    <record model="ir.ui.view" id="view_hospital_appointment_list">
+        <field name="name">hospital.appointment.list</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <list string="Appointments">
+                <field name="reference" />
+                <field name="patient_id" />
+                <field name="appointment_date" />
+                <!-- <field name="notes" /> -->
+            </list>
+        </field>
+    </record>
+    <!--  Form View  -->
+    <record model="ir.ui.view" id="view_hospital_appointment_form">
+        <field name="name">hospital.appointment.form</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <form string="Appointment">
+                <sheet>
+                    <notebook>
+                        <page name="Appointment Details" string="string">
+                            <group>
+                                <field name="reference" readonly='True' />
+                                <field name="patient_id" />
+                                <field name="date_of_birth"/>
+                                <field name="appointment_date" />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter />
+            </form>
+        </field>
+    </record>
+    <!-- ir.actions.act_window → Defines an action that opens the appointment model. -->
+    <record id="action_hospital_appointments" model="ir.actions.act_window">
+        <field name="res_model">hospital.appointment</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="xml">
+            <p class="o_view_nocontent_smiling_face">
+                Click to create a new appointment
+            </p>
+        </field>
+    </record>
+</odoo>
+
+
+        <!-- <notebook>
+            <page name="name" string="string">
+                aya field vado akho code muki deva no , amm karva thhi farten border avi jai segrigation thia jai 
+                aya apne judi judi field daisaki e jemke other info che , product category for exmaple
+            </page>
+        </notebook> -->
