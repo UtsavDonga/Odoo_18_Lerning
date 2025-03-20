@@ -8,8 +8,9 @@
             <list string="Appointments">
                 <field name="reference" />
                 <field name="patient_id" />
+                <field name="doctor_id" />
                 <field name="appointment_date" />
-                <!-- <field name="notes" /> -->
+                <field name="state" />
             </list>
         </field>
     </record>
@@ -25,8 +26,10 @@
                             <group>
                                 <field name="reference" readonly='True' />
                                 <field name="patient_id" />
+                                <field name="doctor_id" />
                                 <field name="date_of_birth"/>
                                 <field name="appointment_date" />
+                                <field name="state" />
                             </group>
                         </page>
                     </notebook>

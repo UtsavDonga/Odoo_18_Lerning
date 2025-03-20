@@ -29,7 +29,6 @@
                         <group>
                             <field name="gender" />
                             <field name="tag_ids" widget='many2many_tags' />
-                            <!-- <field name="product_ids" /> -->
                         </group>
                     </group>
                 </sheet>

@@ -7,6 +7,7 @@ class HospitalAppointment(models.Model):
     _rec_name = 'patient_id'
 
     reference = fields.Char(string='Reference', default='new')
+    doctor_id = fields.Many2one('hospital.doctor', string="Doctor", required=True)
     patient_id = fields.Many2one('hospital.patient', string='Patient', required=True, ondelete="restrict")
     appointment_date = fields.Date(string='Appointment Date')
     state = fields.Selection([
