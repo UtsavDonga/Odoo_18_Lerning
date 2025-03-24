@@ -14,5 +14,8 @@
         'views/patient_tag_views.xml',
         'views/doctors_views.xml',
         'views/menu.xml',
-    ]
+        'data/mail_template.xml',
+    ],
+    'installable': True,
+    'application': True,
 }

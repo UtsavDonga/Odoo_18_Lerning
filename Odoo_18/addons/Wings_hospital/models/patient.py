@@ -12,6 +12,7 @@ class HospitalPatient(models.Model):
     tag_ids = fields.Many2many('hospital.patient.tag', string='Tags')
     doctor_id = fields.Many2one('hospital.doctor', string="Doctor")
     age = fields.Integer(string='Age', compute='_compute_age', store=True)
+    email = fields.Char(string='Email')
 
     @api.depends('date_of_birth')
     def _compute_age(self):

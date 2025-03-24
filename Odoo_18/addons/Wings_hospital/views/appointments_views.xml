@@ -27,12 +27,16 @@
                                 <field name="reference" readonly='True' />
                                 <field name="patient_id" />
                                 <field name="doctor_id" />
-                                <field name="date_of_birth"/>
+                                <field name="date_of_birth" />
                                 <field name="appointment_date" />
                                 <field name="state" />
                             </group>
                         </page>
                     </notebook>
+                    <group>
+                        <button name="send_appointment_email" type="object" string="Send"
+                            class="oe_highlight"/>
+                    </group>
                 </sheet>
                 <chatter />
             </form>
