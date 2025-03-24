@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="mail_template_appointment_created" model="mail.template">
+            <field name="name">Appointment Confirmation Email</field>
+            <field name="model_id" ref="Wings_hospital.model_hospital_appointment" />
+            <field name="email_to">{{ object.doctor_id.email }}</field>
+            <field name="subject">Your Appointment</field>
+            <field name="body_html" type="html">
+                <div>
+                    <p>Dear dr. <t t-esc="object.doctor_id.name" />,</p>
+                    <p>A new appointment has been booked.</p>
+                    <p>Patient Name : <t t-esc="object.patient_id.name"/></p>
+                    <p>appointment date : <t t-esc="object.appointment_date"/></p>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>

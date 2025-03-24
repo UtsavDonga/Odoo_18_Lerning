@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id.perm_read,perm_write,perm_create,perm_unlink
+access_imporrt_export_product,import.export.product,model_imporrt_export_product,1,1,1,1
+access_imporrt_export_partner,import.export.partner,model_imporrt_export_partner,1,1,1,1
+access_imporrt_export_shipment,import.export.shipment,model_imporrt_export_shipment,1,1,1,1
