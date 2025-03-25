@@ -1,24 +1,52 @@
 from odoo import models, fields, api
-from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
 
 class HospitalAppointment(models.Model):
-    _name = "hospital.appointment"
-    _description = "Book a Slot for Appointment"
-    _inherit = 'mail.thread'
-    _rec_name = 'patient_id'
+    _name = "hospital.appointment" #Defines the model's technical name.
+    _description = "Book a Slot for Appointment" #Provides a description of the model.
+    _inherit = 'mail.thread' #Adds tracking functionality (for logging status changes).
+    _rec_name = 'patient_id' #Defines the field shown as the record name in views.
 
-    reference = fields.Char(string='Reference', default='new')
-    doctor_id = fields.Many2one('hospital.doctor', string="Doctor", required=True)
-    patient_id = fields.Many2one('hospital.patient', string='Patient', required=True, ondelete="restrict")
+    reference = fields.Char(string='Reference', default='new') #A unique appointment reference (generated later in the create method).
+    doctor_id = fields.Many2one('hospital.doctor', string="Doctor", required=True) # Links each appointment to one doctor.
+    patient_id = fields.Many2one('hospital.patient', string='Patient', required=True, ondelete="restrict") #Links each appointment to one patient.
     appointment_date = fields.Date(string='Appointment Date')
+
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
         ('done', 'Done'),
         ('cancelled', 'Cancelled')
     ], string='Status', default='draft')
+
     date_of_birth = fields.Date(string="DOB", related='patient_id.date_of_birth', store=True)
 
+    #Drop Down menu for Slot
+    time_slot = fields.Selection([
+        ('10-11','10:00 AM - 11:00 AM'),
+        ('11-12','11:00 AM - 12:00 PM'),
+        ('12-1','12:00 PM - 1:00 PM'),
+        ('2-3','2:00 PM - 3:00 PM'),
+        ('3-4','3:00 PM - 4:00 PM'),
+        ('4-5','4:00 PM - 5:00 PM'),
+        ('5-6','5:00 PM - 6:00 PM'),
+        ('6-7','6:00 PM - 7:00 PM')
+    ], string="Time Slot", required=True)
+
+    #Computed Field for Available Slots
+    available_time_slots = fields.Char(
+        string="Available Slots", compute="_compute_available_slots"
+    )
+    #Stores available slots, Computed dynamically using _compute_available_slots.
+
+    #Ensures that a doctor cannot have multiple appointments in the same time slot on the same date. this chake that Duplicate data is not enterd at database level
+    _sql_constraints = [
+        ('unique_appointment', 'unique(doctor_id, appointment_date, time_slot)',
+         "This time slot is already booked for the selected doctor, please choose another slot.")
+    ]
+
+    #Generates a unique reference number for each appointment.
+    #Uses ir.sequence for sequential numbering.
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -26,20 +54,53 @@ class HospitalAppointment(models.Model):
                 vals['reference'] = self.env['ir.sequence'].next_by_code('hospital.appointment')
         return super().create(vals_list)
 
+    #Ensures copied appointments get a new reference.
     def copy(self, default=None):
         default = dict(default or {})
         default['reference'] = self.env['ir.sequence'].next_by_code('hospital.appointment') or '/'
         return super(HospitalAppointment, self).copy(default)
 
+    #Send mail using Email Template
     def send_appointment_email(self):
-        print("\n\n\n\n\n\n\n\n\n utsav")
         template = self.env.ref('Wings_hospital.mail_template_appointment_created', raise_if_not_found=False)
-        if template:  # Ensure it's a record, not an int  
-            print("\n\n\n\n\n\n\n\n\n template",template)
+        if template:
             template.send_mail(self.id, force_send=True)
         else:
             raise ValueError("Email template 'mail_template_appointment_created' not found!")
 
+
+    #Dynamically calculates available slots by checking existing bookings.
+    #Uses mapped('time_slot') to extract booked slots.
+    @api.depends('doctor_id', 'appointment_date')
+    def _compute_available_slots(self):
+        all_slots = ['10-11', '11-12', '12-1', '2-3', '3-4', '4-5', '5-6', '6-7']
+        for record in self:
+            if record.doctor_id and record.appointment_date:
+                booked_slots = self.env['hospital.appointment'].search([
+                    ('doctor_id', '=', record.doctor_id.id),
+                    ('appointment_date', '=', record.appointment_date),
+                    ('state', '!=', 'cancelled'),
+                    ('id', '!=', record.id)
+                ]).mapped('time_slot')
+
+                available_slots = [slot for slot in all_slots if slot not in booked_slots]
+                record.available_time_slots = ', '.join(available_slots) if available_slots else "No slots available"
+            else:
+                record.available_time_slots = ', '.join(all_slots)
+
+
+    #Ensures that an appointment cannot be created if the time slot is already taken.
+    @api.constrains('doctor_id', 'appointment_date', 'time_slot')
+    def _check_time_slot_availability(self):
+        for record in self:
+            existing_appointment = self.env['hospital.appointment'].search([
+                ('doctor_id', '=', record.doctor_id.id),
+                ('appointment_date', '=', record.appointment_date),
+                ('time_slot', '=', record.time_slot),
+                ('id', '!=', record.id),
+            ])
+            if existing_appointment.exists():
+                raise ValidationError(f"The time slot {record.time_slot} is already booked for this doctor on {record.appointment_date}. Please select a different slot.")
 
   # @api.model
     # def create(self, vals):
